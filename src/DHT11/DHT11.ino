@@ -1,6 +1,6 @@
 #include <DHT.h>
 #include <DHT_U.h>
-#define DHTPIN 2
+#define DHTPIN D4
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 void setup() {
@@ -13,7 +13,6 @@ void loop() {
   delay(1000);
   float h = dht.readHumidity();   //取得濕度
   float t = dht.readTemperature();  //取得溫度C
-
   //顯示在監控視窗裡
   Serial.print("Humidity: ");
   Serial.print(h);
