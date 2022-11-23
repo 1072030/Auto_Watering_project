@@ -1,14 +1,16 @@
 #include <Blynk.h>
 #include <Wire.h> // I2C程式庫
 #include <LiquidCrystal.h> // LCD_I2C模組程式庫
+#include <LiquidCrystal_I2C.h>
+#include <SoftwareSerial.h>
 //-------------------設定Pin角
 #define Pin_Sourrounding 2 // 周遭溫度感測器
 #define Pin_Light 3        // 燈泡
 #define Pin_Water 4        // 澆水啟動(其實是控制繼電器)
-#define Pin_Soil A0        // 土壤溼度感測器
-#define Pin_Refill_Water A1// 水位偵測器
-#define Pin_LCD_SDA A4     // LCD 顯示器
-#define Pin_LCD2_SCL A5    // LCD 顯示器
+// #define Pin_Soil A0        // 土壤溼度感測器
+#define Pin_Refill_Water A0// 水位偵測器
+#define Pin_LCD_SDA D2    // LCD 顯示器
+#define Pin_LCD2_SCL D1    // LCD 顯示器
 //-------------------設定數值
 int soilValue;     //土壤濕度
 int reFillWater;   //水位高度

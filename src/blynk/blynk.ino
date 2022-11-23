@@ -34,7 +34,7 @@
 #define BLYNK_DEVICE_NAME "RS485"
 #define BLYNK_AUTH_TOKEN "1ggaSFNsgEAaNnXuRvwhCGiGpGQ2_xfM"
 #define BLYNK_PRINT Serial  // Comment this out to disable prints and save space
-#define LED_BUILTIN 2
+#define LED_BUILTIN D3
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <SoftwareSerial.h>  // Arduino IDE <1.6.6
@@ -86,12 +86,20 @@ void setup() {
 
 void loop() {
   Blynk.run();
-  //  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  //  delay(1000);                       // wait for a second
-  //  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-  //  delay(1000);                       // wait for a second
+  // digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+  // delay(1000);                       // wait for a second
+  // digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+  // delay(1000);                       // wait for a second
 }
-
+void LightUp(int pinValue){
+   if(pinValue == 1){
+    digitalWrite(LED_BUILTIN, HIGH);
+    Serial.println(pinValue);
+  }else{
+    digitalWrite(LED_BUILTIN, LOW);
+    Serial.println(pinValue);
+  }
+}
 
 // BLYNK_READ(V0) {
 //   if (v < 0.0) v = 0.0;
@@ -101,15 +109,7 @@ void loop() {
 // }
 BLYNK_WRITE(V1) {
   int pinValue = param.asInt();
-  if(pinValue == 1){
-    // digitalWrite(LED_BUILTIN, HIGH);
-    Blynk.virtualWrite(V2,1);
-    Serial.println(pinValue);
-  }else{
-    // digitalWrite(LED_BUILTIN, LOW);
-    Blynk.virtualWrite(V2,0);
-    Serial.println(pinValue);
-  }
+  LightUp(pinValue);
   // Serial.print("V1 Slider value is: ");
 }
 BLYNK_WRITE(V2) {
