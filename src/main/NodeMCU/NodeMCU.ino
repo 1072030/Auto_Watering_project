@@ -15,8 +15,8 @@
 #define DHTTYPE DHT11
 //-------------------設定Pin角
 #define Pin_Sourrounding D5 // 周遭溫度感測器
-#define Pin_Light D6        // 燈泡
-#define Pin_Water D7        // 澆水啟動(其實是控制繼電器)
+#define Pin_Light D3        // 燈泡
+#define Pin_Water D4        // 澆水啟動(其實是控制繼電器)
 #define Pin_Soil A0        // 土壤溼度感測器
 #define Pin_Refill_Water A0// 水位偵測器
 #define Pin_LCD_SDA D2    // LCD 顯示器
@@ -28,7 +28,6 @@ int reFillWater = 0;   //水位高度
 // LCD I2C位址，默認為0x27或0x3F，依據背板的晶片不同而有差異，16、2為LCD顯示器大小。
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
 DHT dht(Pin_Sourrounding, DHTTYPE); //周遭溫度感測
-SoftwareSerial NodeMCU(D3,D4); //Serial OUTPUT
 int count = 0; // lcd顯示次數
 Timer T;
 char auth[] = "1ggaSFNsgEAaNnXuRvwhCGiGpGQ2_xfM"; //blynkToken
