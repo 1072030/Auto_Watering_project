@@ -40,6 +40,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(Pin_Soil,OUTPUT);
   pinMode(Pin_Light,OUTPUT);
+  pinMode(Pin_Water,OUTPUT);
   lcd.init(); //lcd 初始化
   lcd.backlight();
   T.every(10000,LCDChange); 
@@ -148,6 +149,6 @@ void sendAnalog()
   float h = dht.readHumidity();   //取得濕度
   float t = dht.readTemperature();  //取得溫度C
   Blynk.virtualWrite(V9,sensorData);
-  Blynk.virtualWrite(V5,t);
-  Blynk.virtualWrite(V6,h);
+  Blynk.virtualWrite(V13,t);
+  Blynk.virtualWrite(V14,h);
 }
