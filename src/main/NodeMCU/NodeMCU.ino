@@ -33,8 +33,6 @@ char auth[] = "1ggaSFNsgEAaNnXuRvwhCGiGpGQ2_xfM"; //blynkToken
 char ssid[] = "iPhone";  //at home;
 char pass[] = "12345678";    //at home;
 //-------------------blynk設定
-
-IPAddress ip(172, 20, 10, 11);
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -43,8 +41,8 @@ void setup() {
   pinMode(Pin_Water,OUTPUT);
   lcd.init(); //lcd 初始化
   lcd.backlight();
-  T.every(10000,LCDChange); 
-  T.every(3000,sendAnalog); 
+  T.every(10000,LCDChange);  //每十秒更變LCD畫面
+  T.every(3000,sendAnalog);  //每三秒重整blynk資料
   dht.begin();
   Serial.print("Start connect wifi");
   // -------------------------------------------------------------Blynk和wifi設定
@@ -69,34 +67,22 @@ void setup() {
   }
 
   WiFi.printDiag(Serial);
-
   Blynk.config(auth);
   // -------------------------------------------------------------
 }
 void loop() {
   Blynk.run();
   T.update();
-  // T.update();
-  // put your main code here, to run repeatedly:
-  //------------------------------------------------------------------------
-
-  //------------------------------------------------------------------------
-  // 土壤溼度感測器範例
-  // int value=analogRead(A0); //讀取感測器回傳值
-  // Serial.print("value:");
-  // Serial.println(value);
-  // delay(100);
-  //------------------------------------------------------------------------
-  // float h = dht.readHumidity();   //取得濕度
-  // float t = dht.readTemperature();  //取得溫度C
-  // 顯示在監控視窗裡
-  // Serial.print("Humidity: ");
-  // Serial.print(h);
-  // Serial.print(" %\t");
-  // Serial.print("Temperature: ");
-  // Serial.print(t);
-  // Serial.println(" *C ");
-  //------------------------------------------------------------------------
+}
+//-----------------------------------------Blynk
+BLYNK_WRITE(V1) {
+  int pinValue = param.asInt();
+  Serial.print(pinValue);
+  if(pinValue){
+    digitalWrite(Pin_Light,HIGH);
+  }else{
+    digitalWrite(Pin_Light,LOW);
+  }
 }
 BLYNK_WRITE(V2) {
   int pinValue = param.asInt();
@@ -107,15 +93,7 @@ BLYNK_WRITE(V2) {
     digitalWrite(Pin_Water,LOW);
   }
 }
-BLYNK_WRITE(V1) {
-  int pinValue = param.asInt();
-  Serial.print(pinValue);
-  if(pinValue){
-    digitalWrite(Pin_Light,HIGH);
-  }else{
-    digitalWrite(Pin_Light,LOW);
-  }
-}
+//-----------------------------------------LCD顯示
 void LCDChange(){
   count = count +1 ;
   soilValue = analogRead(Pin_Soil);
@@ -143,12 +121,13 @@ void LCDChange(){
     lcd.print(soilValue);
   }
 }
+//-----------------------------------------Blynk網頁變更
 void sendAnalog()
 {
   int sensorData = analogRead(A0); //reading the sensor on A0
-  float h = dht.readHumidity();   //取得濕度
-  float t = dht.readTemperature();  //取得溫度C
+  float humidity = dht.readHumidity();   //取得濕度
+  float temperature = dht.readTemperature();  //取得溫度C
   Blynk.virtualWrite(V9,sensorData);
-  Blynk.virtualWrite(V13,t);
-  Blynk.virtualWrite(V14,h);
+  Blynk.virtualWrite(V13,temperature);
+  Blynk.virtualWrite(V14,humidity);
 }
