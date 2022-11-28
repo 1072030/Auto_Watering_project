@@ -1,6 +1,6 @@
 #include <LiquidCrystal_I2C.h>
-#define Pin_LCD_SDA A4     // LCD 顯示器
-#define Pin_LCD2_SCL A5    // LCD 顯示器
+#define Pin_LCD_SDA D2    // LCD 顯示器
+#define Pin_LCD2_SCL D1    // LCD 顯示器
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
 void setup() {
   // put your setup code here, to run once:

@@ -1,6 +1,6 @@
 #include <DHT.h>
 #include <DHT_U.h>
-#define DHTPIN D4
+#define DHTPIN D3
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 void setup() {

@@ -6,19 +6,18 @@
 #include <ESP8266WiFi.h>        //WIFI
 #include <BlynkSimpleEsp8266.h> //Blynk
 #include <SoftwareSerial.h>     //連接arduinoNano
+#include <DHT.h>                //溫溼度
+#include <DHT_U.h>              //溫溼度
 #include "Timer.h"              //計時器
 #include <Wire.h>               // I2C程式庫
 #include <LiquidCrystal.h>      // LCD_I2C模組程式庫
 #include <LiquidCrystal_I2C.h>  // LCD_I2C模組程式庫
-#include <DHT.h>                //溫溼度
-#include <DHT_U.h>              //溫溼度
 #define DHTTYPE DHT11
 //-------------------設定Pin角
-#define Pin_Sourrounding D5 // 周遭溫度感測器
-#define Pin_Light D3        // 燈泡
-#define Pin_Water D4        // 澆水啟動(其實是控制繼電器)
+#define Pin_Sourrounding D3 // 周遭溫度感測器
+#define Pin_Light D4        // 燈泡
+#define Pin_Water D5        // 澆水啟動(其實是控制繼電器)
 #define Pin_Soil A0        // 土壤溼度感測器
-#define Pin_Refill_Water A0// 水位偵測器
 #define Pin_LCD_SDA D2    // LCD 顯示器
 #define Pin_LCD2_SCL D1    // LCD 顯示器
 //-------------------設定數值
@@ -39,10 +38,13 @@ IPAddress ip(172, 20, 10, 11);
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  pinMode(A0,OUTPUT);
+  pinMode(Pin_Soil,OUTPUT);
+  pinMode(Pin_Light,OUTPUT);
   lcd.init(); //lcd 初始化
   lcd.backlight();
   T.every(10000,LCDChange); 
+  T.every(3000,sendAnalog); 
+  dht.begin();
   Serial.print("Start connect wifi");
   // -------------------------------------------------------------Blynk和wifi設定
   Blynk.begin(auth, ssid, pass);
@@ -72,20 +74,21 @@ void setup() {
 }
 void loop() {
   Blynk.run();
+  T.update();
   // T.update();
   // put your main code here, to run repeatedly:
   //------------------------------------------------------------------------
 
   //------------------------------------------------------------------------
   // 土壤溼度感測器範例
-  // soilValue=analogRead(A0); //讀取感測器回傳值
+  // int value=analogRead(A0); //讀取感測器回傳值
   // Serial.print("value:");
-  // Serial.println(soilValue);
+  // Serial.println(value);
   // delay(100);
   //------------------------------------------------------------------------
   // float h = dht.readHumidity();   //取得濕度
   // float t = dht.readTemperature();  //取得溫度C
-  // //顯示在監控視窗裡
+  // 顯示在監控視窗裡
   // Serial.print("Humidity: ");
   // Serial.print(h);
   // Serial.print(" %\t");
@@ -94,14 +97,27 @@ void loop() {
   // Serial.println(" *C ");
   //------------------------------------------------------------------------
 }
+BLYNK_WRITE(V2) {
+  int pinValue = param.asInt();
+  Serial.print(pinValue);
+  if(pinValue){
+    digitalWrite(Pin_Water,HIGH);
+  }else{
+    digitalWrite(Pin_Water,LOW);
+  }
+}
 BLYNK_WRITE(V1) {
   int pinValue = param.asInt();
   Serial.print(pinValue);
-  // Serial.print("V1 Slider value is: ");
+  if(pinValue){
+    digitalWrite(Pin_Light,HIGH);
+  }else{
+    digitalWrite(Pin_Light,LOW);
+  }
 }
 void LCDChange(){
   count = count +1 ;
-  soilValue = analogRead(A0);
+  soilValue = analogRead(Pin_Soil);
   // LCD顯示
   float h = dht.readHumidity();   //取得濕度
   float t = dht.readTemperature();  //取得溫度C
@@ -125,4 +141,13 @@ void LCDChange(){
     lcd.print(" Water:  ");
     lcd.print(soilValue);
   }
+}
+void sendAnalog()
+{
+  int sensorData = analogRead(A0); //reading the sensor on A0
+  float h = dht.readHumidity();   //取得濕度
+  float t = dht.readTemperature();  //取得溫度C
+  Blynk.virtualWrite(V9,sensorData);
+  Blynk.virtualWrite(V5,t);
+  Blynk.virtualWrite(V6,h);
 }
