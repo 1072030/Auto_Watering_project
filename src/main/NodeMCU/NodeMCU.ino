@@ -28,6 +28,9 @@ int reFillWater = 0;   //水位高度
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
 DHT dht(Pin_Sourrounding, DHTTYPE); //周遭溫度感測
 int count = 0; // lcd顯示次數
+int sensorData; //reading the sensor on A0
+float humidity;   //取得濕度
+float temperature;  //取得溫度C
 Timer T;
 char auth[] = "1ggaSFNsgEAaNnXuRvwhCGiGpGQ2_xfM"; //blynkToken
 char ssid[] = "iPhone";  //at home;
@@ -77,7 +80,6 @@ void loop() {
 //-----------------------------------------Blynk
 BLYNK_WRITE(V1) {
   int pinValue = param.asInt();
-  Serial.print(pinValue);
   if(pinValue){
     digitalWrite(Pin_Light,HIGH);
   }else{
@@ -86,7 +88,6 @@ BLYNK_WRITE(V1) {
 }
 BLYNK_WRITE(V2) {
   int pinValue = param.asInt();
-  Serial.print(pinValue);
   if(pinValue){
     digitalWrite(Pin_Water,HIGH);
   }else{
@@ -124,9 +125,9 @@ void LCDChange(){
 //-----------------------------------------Blynk網頁變更
 void sendAnalog()
 {
-  int sensorData = analogRead(A0); //reading the sensor on A0
-  float humidity = dht.readHumidity();   //取得濕度
-  float temperature = dht.readTemperature();  //取得溫度C
+  sensorData = analogRead(A0); //reading the sensor on A0
+  humidity = dht.readHumidity();   //取得濕度
+  temperature = dht.readTemperature();  //取得溫度C
   Blynk.virtualWrite(V9,sensorData);
   Blynk.virtualWrite(V13,temperature);
   Blynk.virtualWrite(V14,humidity);
