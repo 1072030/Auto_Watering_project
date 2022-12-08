@@ -22,7 +22,6 @@
 #define Pin_LCD2_SCL D1    // LCD 顯示器
 //-------------------設定數值
 int soilValue = 0;     //土壤濕度
-int reFillWater = 0;   //水位高度
 //-------------------模組初始化宣告
 // LCD I2C位址，默認為0x27或0x3F，依據背板的晶片不同而有差異，16、2為LCD顯示器大小。
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
@@ -42,10 +41,11 @@ void setup() {
   pinMode(Pin_Soil,OUTPUT);
   pinMode(Pin_Light,OUTPUT);
   pinMode(Pin_Water,OUTPUT);
+  digitalWrite(Pin_Water,HIGH);
   lcd.init(); //lcd 初始化
   lcd.backlight();
-  T.every(10000,LCDChange);  //每十秒更變LCD畫面
-  T.every(3000,sendAnalog);  //每三秒重整blynk資料
+  T.every(7000,LCDChange);  //每十秒更變LCD畫面
+  T.every(2000,sendAnalog);  //每三秒重整blynk資料
   dht.begin();
   Serial.print("Start connect wifi");
   // -------------------------------------------------------------Blynk和wifi設定
@@ -98,6 +98,7 @@ BLYNK_WRITE(V2) {
 void LCDChange(){
   count = count +1 ;
   soilValue = analogRead(Pin_Soil);
+  soilValue = map(soilValue,1024,0,0,100);
   // LCD顯示
   float h = dht.readHumidity();   //取得濕度
   float t = dht.readTemperature();  //取得溫度C
@@ -117,9 +118,11 @@ void LCDChange(){
     lcd.setCursor(0, 0);
     lcd.print("Moisture:");
     lcd.print(soilValue);
+    lcd.print("%");
     lcd.setCursor(0, 1);
     lcd.print(" Water:  ");
     lcd.print(soilValue);
+    lcd.print("%");
   }
 }
 //-----------------------------------------Blynk網頁變更
@@ -128,7 +131,9 @@ void sendAnalog()
   sensorData = analogRead(A0); //reading the sensor on A0
   humidity = dht.readHumidity();   //取得濕度
   temperature = dht.readTemperature();  //取得溫度C
-  Blynk.virtualWrite(V9,sensorData);
+  sensorData = map(sensorData,1024,0,0,100);
+  Serial.print(sensorData);
+  Blynk.virtualWrite(V15,sensorData);
   Blynk.virtualWrite(V13,temperature);
   Blynk.virtualWrite(V14,humidity);
 }
