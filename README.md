@@ -1,4 +1,4 @@
-# 室內澆水裝置
+# 遠端澆水裝置
 1. download the code.
 2. install the zip file in arduino IDE.(LCD & timer & DHT11)
 3. change preference in the arduino IDE add Esp8266.
